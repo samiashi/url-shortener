@@ -13,7 +13,6 @@ api = NinjaAPI()
 
 @api.post("generate/")
 def add_url(request, payload: AddUrlSchema):
-    print(payload)
     host = request.build_absolute_uri("/")
     url_redirect = Redirect.objects.filter(original_url=payload.url)
 
@@ -23,14 +22,14 @@ def add_url(request, payload: AddUrlSchema):
 
     url_str = str(payload.url).encode()
     url_hash = hashlib.sha256(url_str).hexdigest()[:8]
-    return_url = urljoin(host, url_hash)
 
     url_redirect = Redirect.objects.create(
         original_url=payload.url,
         url_hash=url_hash,
         hits=0,
     )
-    return return_url
+
+    return urljoin(host, url_hash)
 
 
 @api.get("{url_hash}/")
